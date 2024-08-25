@@ -12,6 +12,7 @@ list_of_files = [
     "src/utils/__init__.py",
     "src/utils/common.py",
     "src/logging/__init__.py",
+    "src/logging/logger.py",
     "src/config/__init__.py",
     "src/config/configuration.py",
     "src/pipeline/__init__.py",
