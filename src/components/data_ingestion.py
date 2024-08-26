@@ -25,7 +25,6 @@ class DataIngestion():
         self.file_type = config.file_type
 
     def ingest(self):
-
         try:
             if not os.path.exists(self.source):
                 raise CustomException(f'{self.source} path does not exist', sys)
@@ -36,15 +35,10 @@ class DataIngestion():
             if not self.file_type:
                 raise CustomException('File type not specified', sys)
 
-            train_loader = DataTransformation(self.source, self.destination).transform()
-            
+            # these line's read the input images, transforms them and saves them in the destination folder
+            DataTransformation(self.source + '/train', self.destination + '/train').transform()
+            DataTransformation(self.source + '/val', self.destination + '/val').transform()
 
-
-
-
-
-            
         except Exception as e:
             logging.info(e)
             raise CustomException(e, sys)
-        print(f'Ingesting data from {self.source} to {self.destination} in {self.file_type} format')
