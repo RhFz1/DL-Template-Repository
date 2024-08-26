@@ -1,10 +1,13 @@
 import os
+import sys
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 from dataclasses import dataclass
 from typing import Tuple, List
 from PIL import Image
 from src.config.configuration import DataTransformationConfig
+from src.exceptions.custom_exceptions import CustomException
+from src.logging.logger import logging
 
 
 
@@ -91,15 +94,36 @@ class DataTransformation():
         self.data_dir = data_dir
         self.save_dir = save_dir
 
-    def transform(self, batch_size:int = 4, shuffle: bool = False, num_workers: int = 4, pin_memory: bool = False)-> DataLoader:
+    def transform(self, batch_size:int = 4, shuffle: bool = False, num_workers: int = 4, pin_memory: bool = False)-> bool:
         """
-        Apply the transformations to the data.
+        Apply the transformations to the data, and save the transformed images. 
         Args:
             data_dir (str): Path to the directory containing the data.
         Returns:
             DataLoader: Transformed data.
         """
-        dataset = CustomDataset(self.data_dir, self.save_dir)
-        data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers, pin_memory=pin_memory)
+
+        try: 
+            dataset = CustomDataset(self.data_dir, self.save_dir)
+        except Exception as e:
+            logging.info(e)
+            raise CustomException(e, sys)
+
+    def transform_load(self, batch_size: int = 4, shuffle: bool = False, num_workers: int = 4, pin_memory: bool = False) -> DataLoader:
+        """
+        Apply the transformations to the data, save the transformed images and also load the transformed data.
+        Args:
+            data_dir (str): Path to the directory containing the data.
+        Returns:
+            DataLoader: Transformed data.
+        """
+
+        try:
+            dataset = CustomDataset(self.data_dir, self.save_dir)
+            # the core logic is to return the DataLoader object, which will be used in the training loop.
+            data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers, pin_memory=pin_memory)
+        except Exception as e:
+            logging.info(e)
+            raise CustomException(e, sys)
 
         return data_loader
