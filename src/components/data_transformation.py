@@ -1,5 +1,6 @@
 import os
 import sys
+import random
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 from dataclasses import dataclass
@@ -71,59 +72,25 @@ class CustomDataset(Dataset):
     def __getitem__(self, idx):
         img_name = os.path.join(self.data_dir, self.image_files[idx])
         image = Image.open(img_name)
-        
-        if self.transform:
-            image = self.transform(image)
-
-            # Save the transformed image if a save directory is provided
-            if self.save_transformed_dir:
-                save_path = os.path.join(self.save_transformed_dir, self.image_files[idx])
-                # Convert the tensor back to an image and save it
-                transformed_image = transforms.ToPILImage()(image)
-                transformed_image.save(save_path)
-
         # In this example, the label is derived from the filename; you may adjust as per your dataset.
         label = self.image_files[idx].split('_')[0]  # Example: filename "cat_001.jpg" -> label "cat"
-
         return image, label
     
-
-class DataTransformation():
-
-    def __init__(self, data_dir: str, save_dir: str = None) -> None:
-        self.data_dir = data_dir
-        self.save_dir = save_dir
-
-    def transform(self, batch_size:int = 4, shuffle: bool = False, num_workers: int = 4, pin_memory: bool = False)-> bool:
+    def transform_save(self, split: float = 0.2):
         """
         Apply the transformations to the data, and save the transformed images. 
         Args:
-            data_dir (str): Path to the directory containing the data.
-        Returns:
-            DataLoader: Transformed data.
+            split (float): Percentage of the data to be used for validation.
         """
-
-        try: 
-            dataset = CustomDataset(self.data_dir, self.save_dir)
-        except Exception as e:
-            logging.info(e)
-            raise CustomException(e, sys)
-
-    def transform_load(self, batch_size: int = 4, shuffle: bool = False, num_workers: int = 4, pin_memory: bool = False) -> DataLoader:
-        """
-        Apply the transformations to the data, save the transformed images and also load the transformed data.
-        Args:
-            data_dir (str): Path to the directory containing the data.
-        Returns:
-            DataLoader: Transformed data.
-        """
-
         try:
-            dataset = CustomDataset(self.data_dir, self.save_dir)
-            # the core logic is to return the DataLoader object, which will be used in the training loop.
-            data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers, pin_memory=pin_memory)
+            for idx in range(len(self)):
+                img, label = self.__getitem__(idx)
+                img = self.transform(img)
+                out = lambda x : 1 if random.random() < x else 0
+                if out(split):
+                    img.save(os.path.join(self.save_transformed_dir + '/val', f'{label}_{idx}.{DataTransformationConfig.file_type}'))
+                else:
+                    img.save(os.path.join(self.save_transformed_dir + '/train', f'{label}_{idx}.{DataTransformationConfig.file_type}'))
         except Exception as e:
             logging.info(e)
             raise CustomException(e, sys)
-
-        return data_loader
