@@ -2,8 +2,8 @@ import os
 import sys
 from src.config.configuration import DataConfig
 from src.exceptions.custom_exceptions import CustomException
-from src.components.data_transformation import DataTransformation
 from src.logging.logger import logging
+from src.components.data_transformation import CustomDataset
 from dataclasses import dataclass
 from dotenv import load_dotenv
 
@@ -15,8 +15,6 @@ class DataIngestionConfig():
     source: str = DataConfig.source
     destination: str = DataConfig.destination
     file_type: str = DataConfig.file_type
-
-
 
 class DataIngestion():
     def __init__(self, config: DataIngestionConfig):
@@ -34,11 +32,10 @@ class DataIngestion():
             
             if not self.file_type:
                 raise CustomException('File type not specified', sys)
-
-            # these line's read the input images, transforms them and saves them in the destination folder
-            DataTransformation(self.source + '/train', self.destination + '/train').transform()
-            DataTransformation(self.source + '/val', self.destination + '/val').transform()
-
+            
+            # this line takes in data from the source directory and saves the transformed data in the destination directory with a train val split.
+            CustomDataset(data_dir=self.source, save_transformed_dir=self.destination).transform_save(split=0.2)
+            
         except Exception as e:
             logging.info(e)
             raise CustomException(e, sys)
