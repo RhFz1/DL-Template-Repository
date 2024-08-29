@@ -33,12 +33,27 @@ def load_checkpoint(model, optimizer, model_dir):
     Returns:
         tuple: Updated model and optimizer.
     """
+    # Log the start of checkpoint loading process
     logging.info(f"Loading checkpoint from {model_dir}")
+
+    # Get the latest model file from the directory
     model_latest = os.listdir(model_dir)[-1]
+
+    # Load the checkpoint from the file
     checkpoint = torch.load(os.path.join(model_dir, model_latest))
+
+    # Load the model state from the checkpoint
     model.load_state_dict(checkpoint['model_state_dict'])
+
+    # Load the optimizer state from the checkpoint
     optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+
+    # Get the best validation loss from the checkpoint
     best_val_loss = checkpoint['best_val_loss']
+
+    # Log successful loading of the checkpoint
     logging.info(f"Checkpoint loaded successfully from {model_dir}")
+
+    # Return the updated model, optimizer, and best validation loss
     return model, optimizer, best_val_loss
 
