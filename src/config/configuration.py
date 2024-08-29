@@ -28,3 +28,4 @@ class TrainingConfig():
     weight_decay: float = 0.0001
     momentum: float = 0.9
     betas: Tuple[float, float] = (0.9, 0.999)
+    registry: str = os.getenv('REGISTRY_PATH')
