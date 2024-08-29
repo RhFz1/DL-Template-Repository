@@ -20,7 +20,7 @@ def save_checkpoint(state, model_dir, filename="my_checkpoint.pth"):
     os.makedirs(model_dir, exist_ok=True)  # Create directory if it doesn't exist
     torch.save(state, os.path.join(model_dir, filename))
 
-def load_checkpoint(model, optimizer, model_dir, filename="my_checkpoint.pth"):
+def load_checkpoint(model, optimizer, model_dir):
     """
     Load a checkpoint and update the model and optimizer states.
 
@@ -34,8 +34,11 @@ def load_checkpoint(model, optimizer, model_dir, filename="my_checkpoint.pth"):
         tuple: Updated model and optimizer.
     """
     logging.info(f"Loading checkpoint from {model_dir}")
-    model.load_state_dict(torch.load(os.path.join(model_dir, filename)))
-    optimizer.load_state_dict(torch.load(os.path.join(model_dir, filename)))
+    model_latest = os.listdir(model_dir)[-1]
+    checkpoint = torch.load(os.path.join(model_dir, model_latest))
+    model.load_state_dict(checkpoint['model_state_dict'])
+    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    best_val_loss = checkpoint['best_val_loss']
     logging.info(f"Checkpoint loaded successfully from {model_dir}")
-    return model, optimizer
+    return model, optimizer, best_val_loss
 
