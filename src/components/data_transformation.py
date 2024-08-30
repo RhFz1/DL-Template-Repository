@@ -11,14 +11,6 @@ from src.exceptions.custom_exceptions import CustomException
 from src.logging.logger import logging
 
 
-
-@dataclass
-class DataTransformationConfig():
-    reshape: Tuple[int, int] = DataTransformationConfig.reshape
-    std: List[int, int, int] = DataTransformationConfig.std
-    mean: List[int, int, int] = DataTransformationConfig.mean
-
-
 class CustomTransform():
     def __init__(self, config: DataTransformationConfig = DataTransformationConfig()):
         """
