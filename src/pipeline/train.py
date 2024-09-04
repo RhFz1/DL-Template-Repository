@@ -109,7 +109,7 @@ class Trainer():
         # Calculate average validation loss and accuracy
         val_loss /= len(self.val_loader.dataset)
         val_accuracy = 100. * correct / len(self.val_loader.dataset)
-        print(f'Validation set: Average loss: {val_loss:.4f}, Accuracy: {correct}/{len(self.    val_loader.dataset)} ({val_accuracy:.2f}%)\n')
+        print(f'Validation set: Average loss: {val_loss:.4f}, Accuracy: {correct}/{len(self.val_loader.dataset)} ({val_accuracy:.2f}%)\n')
         return val_loss, val_accuracy
     
     def train(self):
